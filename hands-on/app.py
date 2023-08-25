@@ -13,8 +13,9 @@ st.title("Data Storyteller Application")
 
 # Add all your applications (pages) here
 app.add_page("강조 문구", exam_01.app)
-app.add_page("layout 짜기", exam_02.app)
-
+app.add_page("layout 짜기-column", exam_02.app)
+app.add_page("layout 짜기-tab", exam_03.app)
+app.add_page("layout 짜기-sidebar", exam_04.app)
 
 # The main app
 app.run()
