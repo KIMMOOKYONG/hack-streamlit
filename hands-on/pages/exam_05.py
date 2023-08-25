@@ -4,7 +4,7 @@ from PIL import Image
 def app():
     #PIL 패키지에 이미지 모듈을 통해 이미지 열기 
     # Image.open('이미지 경로')
-    zarathu_img = Image.open("../data/zarathu.jpg")
+    zarathu_img = Image.open("data/zarathu.jpg")
 
     col1,col2 = st.columns([2,3])
     with col1 :
