@@ -4,9 +4,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib import font_manager, rc
 
-plt.rcParams['axes.unicode_minus'] = False
-if platform.system() == 'Linux':
-    rc('font', family='NanumGothic')
+# plt.rcParams['axes.unicode_minus'] = False
+# if platform.system() == 'Linux':
+#     rc('font', family='NanumGothic')
 
 # 스트림릿 앱 생성
 st.title("데이터 프로파일링 실습")
