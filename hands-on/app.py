@@ -12,7 +12,9 @@ app = MultiPage()
 st.title("Data Storyteller Application")
 
 # Add all your applications (pages) here
-app.add_page("Upload Data", exam_01.app)
+app.add_page("강조 문구", exam_01.app)
+app.add_page("layout 짜기", exam_02.app)
+
 
 # The main app
 app.run()
