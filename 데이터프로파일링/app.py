@@ -1,9 +1,3 @@
-import talib
-import plotly.graph_objects as go
-import matplotlib.pyplot as plt
-from datetime import date
-import bt 
-
 import platform
 import streamlit as st
 import pandas as pd
@@ -17,105 +11,45 @@ if platform.system() == 'Linux':
 # 스트림릿 앱 생성
 st.title("데이터 프로파일링 실습")
 
-
-#inputs from user
-ticker = st.sidebar.text_input("Please enter a ticker symbol","SPY").upper()
-days = st.sidebar.number_input("Please enter the number of days of data you would like",30)
-strategy = st.sidebar.radio('Select Strategy', ['Single Moving Average','Moving Average Crossover'])
-
-#filter moving average windows by strategy
-if strategy == 'Single Moving Average':
-    single_ma = st.sidebar.number_input("Please enter your moving average window",5)
-    single_ma = [single_ma]
-    strategy = 'Single Moving Average'
-    window = single_ma
-else:
-    lma = st.sidebar.number_input("Please enter your long MA window",30)
-    sma = st.sidebar.number_input("Please enter your short MA window",5)
-    strategy = 'Crossover Moving Average'
-    window = [sma,lma]
-
-
 # 파일 업로드 위젯
 uploaded_file = st.file_uploader("데이터 파일 업로드", type=["csv", "xlsx"])
 
 if uploaded_file is not None:
-    stock_data = pd.read_csv(uploaded_file)
+    # 업로드한 파일을 DataFrame으로 변환
+    df = pd.read_csv(uploaded_file)  # 엑셀 파일일 경우 pd.read_excel 사용
+    
+    # 데이터 프로파일링
+    st.header("데이터 미리보기")
+    st.write(df.head())
 
-    EMA_short = talib.EMA(stock_data['Close'], timeperiod=12).to_frame()
+    st.header("기본 정보")
+    st.write("행 수:", df.shape[0])
+    st.write("열 수:", df.shape[1])
 
-    EMA_short = EMA_short.rename(columns={0: 'Close'})
-    EMA_long = talib.EMA(stock_data['Close'], timeperiod=50).to_frame()
-    EMA_long = EMA_long.rename(columns={0: 'Close'})
+    st.header("누락된 값")
+    missing_data = df.isnull().sum()
+    st.write(missing_data)
 
-    signal = EMA_long.copy()
-    signal[EMA_long.isnull()] = 0
-    signal[EMA_short > EMA_long] = 1
-    signal[EMA_short < EMA_long] = -1
+    st.header("중복된 행 수")
+    duplicated_rows = df.duplicated().sum()
+    st.write(duplicated_rows)
 
-    transition = signal[signal['Close'].diff()!=0]
-    buy_signal = transition[transition['Close'] == 1]
-    sell_signal = transition[transition['Close'] == -1]
+    st.header("수치형 데이터 기술 통계량")
+    numerical_stats = df.describe()
+    st.write(numerical_stats)
 
-    long_index = buy_signal.index
-    buy_position = stock_data[stock_data.index.isin(long_index)]
-    short_index = sell_signal.index
-    sell_position = stock_data[stock_data.index.isin(short_index)]
+    st.header("이상치 탐지 (상자 그림)")
+    plt.figure(figsize=(10, 6))
+    plt.boxplot(df.select_dtypes(include=['number']).values)
+    plt.xticks(range(1, len(df.columns) + 1), df.columns, rotation=45)
+    plt.title("Outlier detection (box plot)")
+    st.pyplot(plt)
 
-    fig = go.Figure()
-    fig.add_trace(
-            go.Candlestick(x=stock_data.index,
-                    open=stock_data['Open'],
-                    high=stock_data['High'],
-                    low=stock_data['Low'],
-                    close=stock_data['Close'],
-                    name="Stock Prices"
-                          )            
-    )
-
-    fig.add_trace(
-            go.Scatter(
-                x=stock_data.index,
-                y=EMA_long['Close'],
-                name="EMA 50"
-            )
-    )
-
-    fig.add_trace(
-            go.Scatter(
-                x=stock_data.index,
-                y=EMA_short['Close'],
-                name = "EMA 12"
-            )
-    )
-
-    fig.add_trace(
-            go.Scatter(
-                x=buy_position.index,
-                y=buy_position['Close'], 
-                name="Buy Signal",
-                marker=dict(color="#511CFB", size=15),
-                mode="markers",
-                marker_symbol="triangle-up"
-            )
-    )
-
-    fig.add_trace(
-            go.Scatter(
-                x=sell_position.index,
-                y=sell_position['Close'], 
-                name="Sell Signal",
-                marker=dict(color="#750086", size=15),
-                mode="markers",
-                marker_symbol="triangle-down"
-            )
-    )
-
-    fig.update_layout(
-        xaxis_rangeslider_visible=False,
-        title="Daily Close Prices",
-        xaxis_title="Date",
-        yaxis_title="Price (USD)"
-    )
-
-    st.plotly_chart(fig)
+    st.header("데이터 분포 시각화")
+    column_to_plot = st.selectbox("열 선택", df.columns)
+    plt.figure(figsize=(10, 6))
+    plt.hist(df[column_to_plot], bins=20, edgecolor='k')
+    plt.xlabel(column_to_plot)
+    plt.ylabel("빈도")
+    plt.title(f"{column_to_plot} Data Distribution")
+    st.pyplot(plt)
