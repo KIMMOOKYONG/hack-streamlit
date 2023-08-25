@@ -4,9 +4,6 @@ from PIL import Image
 def app():
     #PIL 패키지에 이미지 모듈을 통해 이미지 열기 
     # Image.open('이미지 경로')
-    zarathu_img = Image.open("https://raw.githubusercontent.com/KIMMOOKYONG/hack-streamlit/main/hands-on/data/zarathu.jpg")
-
-st.image(htp5, caption= '80-day sale data', width=300)
 
     col1,col2 = st.columns([2,3])
     with col1 :
@@ -17,7 +14,7 @@ st.image(htp5, caption= '80-day sale data', width=300)
         st.title('here is column2')
 
     # 컬럼2에 불러온 사진 표시하기
-    col2.image(zarathu_img)
+    col2.image("https://s3-us-west-2.amazonaws.com/uw-s3-cdn/wp-content/uploads/sites/6/2017/11/04133712/waterfall.jpg", width=400)
 
     code = '''
     import streamlit as st
