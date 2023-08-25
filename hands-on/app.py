@@ -4,6 +4,7 @@ import streamlit as st
 from multipage import MultiPage
 # import your pages here
 from pages import exam_01, exam_02, exam_03, exam_04
+from pages import exam_05
 
 # Create an instance of the app 
 app = MultiPage()
