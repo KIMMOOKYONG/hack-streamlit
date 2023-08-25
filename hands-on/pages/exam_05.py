@@ -20,10 +20,6 @@ def app():
     import streamlit as st
     from PIL import Image
 
-    #PIL 패키지에 이미지 모듈을 통해 이미지 열기 
-    # Image.open('이미지 경로')
-    zarathu_img = Image.open('zarathu.png')
-
     col1,col2 = st.columns([2,3])
 
     with col1 :
@@ -36,6 +32,6 @@ def app():
 
 
     # 컬럼2에 불러온 사진 표시하기
-    col2.image(zarathu_img)
+    col2.image("https://s3-us-west-2.amazonaws.com/uw-s3-cdn/wp-content/uploads/sites/6/2017/11/04133712/waterfall.jpg", width=400)
     '''
     st.code(code, language="python")
